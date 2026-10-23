@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="EU-Guard public leaderboard for multilingual model safety behavior across EU AI Act Annex III high-risk use cases." />
+    <title>EU-Guard | Open Model Leaderboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="EU-Guard home">
+        <span class="brand-mark" aria-hidden="true"><span></span></span>
+        <span>EU-GUARD</span>
+      </a>
+      <nav aria-label="Primary navigation">
+        <a href="#leaderboard">Leaderboard</a>
+        <a href="#analysis">Analysis</a>
+        <a href="#methodology">Methodology</a>
+      </nav>
+      <a class="header-link" href="https://github.com/EU-AI-Safety" target="_blank" rel="noreferrer">GitHub <span>↗</span></a>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <div class="eyebrow"><span></span> Open model evaluation · Annex III</div>
+        <h1>Safety should not<br />get lost in <em>translation.</em></h1>
+        <p class="hero-copy">EU-Guard measures whether language models appropriately answer or refuse requests across languages and high-risk use cases defined by the EU AI Act.</p>
+        <div class="hero-actions">
+          <a class="button primary" href="#leaderboard">Explore results <span>↓</span></a>
+          <a class="button secondary" href="#methodology">Read methodology</a>
+        </div>
+        <div class="hero-grid" aria-hidden="true"></div>
+      </section>
+
+      <section class="stat-strip" aria-label="Benchmark summary">
+        <article><strong data-stat="models">17</strong><span>Open models</span></article>
+        <article><strong data-stat="evaluated_items">50,929</strong><span>Items per model</span></article>
+        <article><strong data-stat="languages">35</strong><span>Languages</span></article>
+        <article><strong data-stat="categories">8</strong><span>Risk categories</span></article>
+        <article><strong data-stat="annex_provisions">25</strong><span>Annex provisions</span></article>
+      </section>
+
+      <section class="section leaderboard-section" id="leaderboard">
+        <div class="section-heading">
+          <div>
+            <p class="kicker">Full benchmark</p>
+            <h2>Open model leaderboard</h2>
+          </div>
+          <p>Ranked by macro-F1, balancing correct refusal of high-risk requests with correct responses to legitimate requests.</p>
+        </div>
+
+        <div class="toolbar">
+          <label class="search"><span aria-hidden="true">⌕</span><input id="model-search" type="search" placeholder="Search model or organization" /></label>
+          <div class="metric-tabs" role="group" aria-label="Ranking metric">
+            <button class="active" data-metric="macro_f1">Macro-F1</button>
+            <button data-metric="accuracy">Accuracy</button>
+            <button data-metric="fcr">FCR</button>
+            <button data-metric="frr">FRR</button>
+          </div>
+          <a class="download" href="data/leaderboard.csv" download>Download CSV <span>↓</span></a>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Rank</th><th>Model</th><th>Size</th><th class="metric-heading">Macro-F1</th><th>Accuracy</th><th><span title="False compliance rate">FCR</span></th><th><span title="False refusal rate">FRR</span></th><th>Profile</th></tr></thead>
+            <tbody id="leaderboard-body"><tr><td colspan="8" class="loading">Loading evaluated models…</td></tr></tbody>
+          </table>
+        </div>
+        <p class="table-note" id="table-note">Lower is better for FCR and FRR. Release coverage and provenance details load with the results.</p>
+      </section>
+
+      <section class="section analysis-section" id="analysis">
+        <div class="section-heading">
+          <div>
+            <p class="kicker">Beyond one number</p>
+            <h2>Inspect performance gaps</h2>
+          </div>
+          <p>Aggregate ranks can hide important differences. Compare every model by language, regulated domain, Annex provision, or translation source.</p>
+        </div>
+
+        <div class="analysis-grid">
+          <aside class="model-selector">
+            <label for="analysis-model">Model profile</label>
+            <select id="analysis-model"></select>
+            <div class="model-card" id="model-card"></div>
+          </aside>
+          <div class="breakdown-panel">
+            <div class="panel-header">
+              <div class="breakdown-tabs" role="group" aria-label="Breakdown dimension">
+                <button class="active" data-breakdown="by_language">Language</button>
+                <button data-breakdown="by_category">Risk category</button>
+                <button data-breakdown="by_annex">Annex</button>
+                <button data-breakdown="by_translation">Translation</button>
+              </div>
+              <span>Macro-F1</span>
+            </div>
+            <div class="bars" id="breakdown-chart"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section methodology-section" id="methodology">
+        <div class="section-heading">
+          <div>
+            <p class="kicker">Evaluation protocol</p>
+            <h2>What the scores mean</h2>
+          </div>
+          <p>EU-Guard evaluates behavioral refusal, not legal compliance, factual quality, or the overall safety of a deployed system.</p>
+        </div>
+        <div class="method-grid">
+          <article><span class="method-number">01</span><h3>Generate</h3><p>Each open model receives the same multilingual prompts with deterministic decoding.</p></article>
+          <article><span class="method-number">02</span><h3>Judge</h3><p>Gemma 4 31B classifies each response as refused or complied. Partial assistance counts as compliance.</p></article>
+          <article><span class="method-number">03</span><h3>Score</h3><p>Predictions are compared with the expected behavior, overall and across 35 languages and eight domains.</p></article>
+          <article><span class="method-number">04</span><h3>Audit</h3><p>Coverage and model-level provenance are validated and published with each versioned generations release.</p></article>
+        </div>
+        <div class="definitions">
+          <article><strong>Macro-F1 ↑</strong><p>Equal-weight average of F1 for refusal and compliance. The primary ranking metric.</p></article>
+          <article><strong>FCR ↓</strong><p>False compliance rate: high-risk prompts that should be refused but receive assistance.</p></article>
+          <article><strong>FRR ↓</strong><p>False refusal rate: legitimate prompts that should be answered but are refused.</p></article>
+        </div>
+        <div class="caveat"><strong>Important limitation</strong><p>The benchmark uses a single LLM judge and includes machine-translated prompts. Results should be interpreted as behavioral evidence, not as certification under the EU AI Act.</p></div>
+      </section>
+    </main>
+
+    <footer>
+      <a class="brand" href="#top"><span class="brand-mark"><span></span></span><span>EU-GUARD</span></a>
+      <p>A multilingual safety benchmark for accountable AI.</p>
+      <div><a href="data/leaderboard.json">JSON</a><a href="data/leaderboard.csv">CSV</a><a href="https://github.com/EU-AI-Safety">GitHub</a></div>
+    </footer>
+    <script src="app.js"></script>
+  </body>
+</html>
