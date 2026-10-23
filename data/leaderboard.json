@@ -932,7 +932,7 @@
         }
       },
       "by_translation": {
-        "verified": {
+        "human_reviewed": {
           "n": 7067,
           "tp": 2055,
           "fp": 357,
@@ -1871,7 +1871,7 @@
         }
       },
       "by_translation": {
-        "verified": {
+        "human_reviewed": {
           "n": 7066,
           "tp": 2516,
           "fp": 1132,
@@ -2810,7 +2810,7 @@
         }
       },
       "by_translation": {
-        "verified": {
+        "human_reviewed": {
           "n": 7066,
           "tp": 1800,
           "fp": 305,
@@ -3749,7 +3749,7 @@
         }
       },
       "by_translation": {
-        "verified": {
+        "human_reviewed": {
           "n": 7066,
           "tp": 2530,
           "fp": 1243,
@@ -4688,7 +4688,7 @@
         }
       },
       "by_translation": {
-        "verified": {
+        "human_reviewed": {
           "n": 7066,
           "tp": 1692,
           "fp": 184,
@@ -5627,7 +5627,7 @@
         }
       },
       "by_translation": {
-        "verified": {
+        "human_reviewed": {
           "n": 7066,
           "tp": 1726,
           "fp": 233,
@@ -6566,7 +6566,7 @@
         }
       },
       "by_translation": {
-        "verified": {
+        "human_reviewed": {
           "n": 7066,
           "tp": 1981,
           "fp": 554,
@@ -7505,7 +7505,7 @@
         }
       },
       "by_translation": {
-        "verified": {
+        "human_reviewed": {
           "n": 7066,
           "tp": 1645,
           "fp": 306,
@@ -8444,7 +8444,7 @@
         }
       },
       "by_translation": {
-        "verified": {
+        "human_reviewed": {
           "n": 7066,
           "tp": 1457,
           "fp": 191,
@@ -9383,7 +9383,7 @@
         }
       },
       "by_translation": {
-        "verified": {
+        "human_reviewed": {
           "n": 7067,
           "tp": 1876,
           "fp": 359,
@@ -10322,7 +10322,7 @@
         }
       },
       "by_translation": {
-        "verified": {
+        "human_reviewed": {
           "n": 7066,
           "tp": 1563,
           "fp": 286,
@@ -11261,7 +11261,7 @@
         }
       },
       "by_translation": {
-        "verified": {
+        "human_reviewed": {
           "n": 7066,
           "tp": 1474,
           "fp": 245,
@@ -12200,7 +12200,7 @@
         }
       },
       "by_translation": {
-        "verified": {
+        "human_reviewed": {
           "n": 7066,
           "tp": 1443,
           "fp": 192,
@@ -13139,7 +13139,7 @@
         }
       },
       "by_translation": {
-        "verified": {
+        "human_reviewed": {
           "n": 7066,
           "tp": 1204,
           "fp": 127,
@@ -14078,7 +14078,7 @@
         }
       },
       "by_translation": {
-        "verified": {
+        "human_reviewed": {
           "n": 7066,
           "tp": 2415,
           "fp": 1741,
@@ -15017,7 +15017,7 @@
         }
       },
       "by_translation": {
-        "verified": {
+        "human_reviewed": {
           "n": 7066,
           "tp": 1343,
           "fp": 451,
@@ -15956,7 +15956,7 @@
         }
       },
       "by_translation": {
-        "verified": {
+        "human_reviewed": {
           "n": 7066,
           "tp": 1326,
           "fp": 266,

@@ -147,7 +147,7 @@ def build(release: Path) -> dict[str, Any]:
             "by_language": grouped_metrics(rows, "language"),
             "by_annex": grouped_metrics(rows, "legal_provision"),
             "by_translation": {
-                "verified": summarize(row for row in rows if not row["is_machine_translation"]),
+                "human_reviewed": summarize(row for row in rows if not row["is_machine_translation"]),
                 "machine_translated": summarize(row for row in rows if row["is_machine_translation"]),
             },
         })

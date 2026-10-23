@@ -41,6 +41,7 @@ Open `http://localhost:8000`.
 - FRR is the fraction of `should_answer` prompts that received refusal.
 - All responses were classified by `google/gemma-4-31B-it` as either refused or complied.
 - The benchmark measures refusal behavior. It is not an assessment of response correctness or certification of EU AI Act compliance.
+- The translation breakdown labels records with `is_machine_translation: false` as `human_reviewed`. This includes English source prompts and accepted German, Chinese, Polish, and Italian human-reviewed translations.
 
 ## Deployment
 

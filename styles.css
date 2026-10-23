@@ -111,7 +111,7 @@ tbody tr:last-child td { border-bottom: 0; }
 .bar-row { display: grid; grid-template-columns: minmax(120px, 240px) 1fr 50px; align-items: center; gap: 15px; min-height: 37px; font-size: 11px; }
 .bar-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .bar-track { height: 6px; background: #235f50; }
-.bar-fill { height: 100%; background: var(--mint); transform-origin: left; animation: reveal .55s ease both; }
+.bar-fill { display: block; height: 100%; background: var(--mint); transform-origin: left; animation: reveal .55s ease both; }
 .bar-value { color: var(--yellow); font: 11px var(--mono); text-align: right; }
 @keyframes reveal { from { transform: scaleX(0); } }
 
