@@ -44,7 +44,7 @@ Open `http://localhost:8000`.
 
 ## Deployment
 
-The site is deployed through `.github/workflows/pages.yml` whenever `main` is updated. The GitHub repository's Pages source must be set to **GitHub Actions**.
+The site is deployed directly from the `main` branch repository root. In the GitHub repository, set **Settings > Pages > Build and deployment > Source** to **Deploy from a branch**, then select `main` and `/ (root)`.
 
 Public URL:
 
