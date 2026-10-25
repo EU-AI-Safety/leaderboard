@@ -1,4 +1,4 @@
-const state = { data: null, metric: "macro_f1", breakdown: "by_language", query: "" };
+const state = { data: null, metric: "macro_f1", analysisMetric: "macro_f1", breakdown: "by_language", query: "" };
 
 const labels = {
   macro_f1: "Macro-F1",
@@ -110,7 +110,8 @@ function renderAnalysis() {
       <div><dt>Evaluated items</dt><dd>${model.metrics.n.toLocaleString()}</dd></div>
     </dl>`;
 
-  const entries = Object.entries(model[state.breakdown]).sort((a, b) => b[1].macro_f1 - a[1].macro_f1);
+  const metric = state.analysisMetric;
+  const entries = Object.entries(model[state.breakdown]).sort((a, b) => b[1][metric] - a[1][metric]);
   const breakdownLabel = (key) => state.breakdown === "by_annex"
     ? `<span class="annex-code">${key}</span><span class="annex-name">${annexProvisions[key] || "Annex III use case"}</span>`
     : pretty(key);
@@ -118,10 +119,10 @@ function renderAnalysis() {
     ? `Annex III ${key} · ${annexProvisions[key] || "High-risk AI use case"}`
     : key;
   document.getElementById("breakdown-chart").innerHTML = entries.map(([key, metrics], index) => `
-    <div class="bar-row" title="${tooltipLabel(key)}: ${percent(metrics.macro_f1)} macro-F1 across ${metrics.n.toLocaleString()} items">
+    <div class="bar-row metric-${metric}" title="${tooltipLabel(key)}: ${percent(metrics[metric])} ${labels[metric]} across ${metrics.n.toLocaleString()} items${metric === "macro_f1" ? "" : "; lower is better"}">
       <span class="bar-label ${state.breakdown === "by_annex" ? "annex-label" : ""}">${breakdownLabel(key)}</span>
-      <span class="bar-track"><span class="bar-fill" style="width:${metrics.macro_f1 * 100}%; animation-delay:${Math.min(index * 18, 220)}ms"></span></span>
-      <span class="bar-value">${percent(metrics.macro_f1)}</span>
+      <span class="bar-track"><span class="bar-fill" style="width:${metrics[metric] * 100}%; animation-delay:${Math.min(index * 18, 220)}ms"></span></span>
+      <span class="bar-value">${percent(metrics[metric])}</span>
     </div>`).join("");
 }
 
@@ -141,6 +142,13 @@ document.querySelectorAll("[data-breakdown]").forEach((button) => button.addEven
   document.querySelectorAll("[data-breakdown]").forEach((item) => item.classList.remove("active"));
   button.classList.add("active");
   state.breakdown = button.dataset.breakdown;
+  renderAnalysis();
+}));
+
+document.querySelectorAll("[data-analysis-metric]").forEach((button) => button.addEventListener("click", () => {
+  document.querySelectorAll("[data-analysis-metric]").forEach((item) => item.classList.remove("active"));
+  button.classList.add("active");
+  state.analysisMetric = button.dataset.analysisMetric;
   renderAnalysis();
 }));
 

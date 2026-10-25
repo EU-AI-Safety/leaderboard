@@ -63,9 +63,9 @@ h2 { margin: 0; font-size: clamp(38px, 5vw, 64px); line-height: 1; letter-spacin
 .search { min-width: 245px; display: flex; gap: 9px; align-items: center; padding-left: 10px; }
 .search span { font-size: 22px; }
 .search input { width: 100%; background: transparent; border: 0; outline: 0; font-size: 12px; }
-.metric-tabs, .breakdown-tabs { display: flex; gap: 3px; }
-.metric-tabs button, .breakdown-tabs button { border: 0; background: transparent; padding: 9px 12px; font: 500 11px var(--mono); cursor: pointer; color: var(--muted); }
-.metric-tabs button.active, .breakdown-tabs button.active { background: var(--mint); color: var(--green-dark); }
+.metric-tabs, .breakdown-tabs, .analysis-metrics { display: flex; gap: 3px; }
+.metric-tabs button, .breakdown-tabs button, .analysis-metrics button { border: 0; background: transparent; padding: 9px 12px; font: 500 11px var(--mono); cursor: pointer; color: var(--muted); }
+.metric-tabs button.active, .breakdown-tabs button.active, .analysis-metrics button.active { background: var(--mint); color: var(--green-dark); }
 .download { margin-left: auto; padding: 10px; font: 500 11px var(--mono); }
 .table-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); }
 table { width: 100%; border-collapse: collapse; min-width: 850px; }
@@ -106,7 +106,9 @@ tbody tr:last-child td { border-bottom: 0; }
 .breakdown-panel { min-width: 0; }
 .panel-header { min-height: 60px; padding: 11px 18px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #376a5d; }
 .breakdown-tabs button { color: #c4d2cd; }
-.panel-header > span { color: #9fb7ae; font: 10px var(--mono); text-transform: uppercase; }
+.analysis-metrics { padding-left: 14px; border-left: 1px solid #376a5d; }
+.analysis-metrics button { color: #9fb7ae; }
+.analysis-metrics button.active { background: var(--yellow); color: var(--green-dark); }
 .bars { max-height: 510px; padding: 18px 25px; overflow-y: auto; scrollbar-color: #4f8a78 transparent; }
 .bar-row { display: grid; grid-template-columns: minmax(120px, 240px) 1fr 50px; align-items: center; gap: 15px; min-height: 37px; font-size: 11px; }
 .bar-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -116,6 +118,9 @@ tbody tr:last-child td { border-bottom: 0; }
 .bar-track { height: 6px; background: #235f50; }
 .bar-fill { display: block; height: 100%; background: var(--mint); transform-origin: left; animation: reveal .55s ease both; }
 .bar-value { color: var(--yellow); font: 11px var(--mono); text-align: right; }
+.metric-fcr .bar-fill { background: var(--coral); }
+.metric-fcr .bar-value { color: #ff9b86; }
+.metric-frr .bar-fill { background: var(--yellow); }
 @keyframes reveal { from { transform: scaleX(0); } }
 
 .methodology-section { background: var(--surface); }
@@ -173,7 +178,7 @@ footer .brand-mark::before, footer .brand-mark::after, footer .brand-mark span {
   .analysis-section .section-heading { padding: 0 22px; }
   .panel-header { display: block; }
   .breakdown-tabs { overflow-x: auto; }
-  .panel-header > span { display: none; }
+  .analysis-metrics { margin-top: 8px; padding: 8px 0 0; border-top: 1px solid #376a5d; border-left: 0; }
   .bar-row { grid-template-columns: 105px 1fr 42px; gap: 8px; }
   .annex-name { display: none; }
   .method-grid, .definitions { grid-template-columns: 1fr; }

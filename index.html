@@ -96,7 +96,11 @@
                 <button data-breakdown="by_annex">Annex</button>
                 <button data-breakdown="by_translation">Translation</button>
               </div>
-              <span>Macro-F1</span>
+              <div class="analysis-metrics" role="group" aria-label="Breakdown metric">
+                <button class="active" data-analysis-metric="macro_f1">Macro-F1</button>
+                <button data-analysis-metric="fcr" title="False compliance rate; lower is better">FCR</button>
+                <button data-analysis-metric="frr" title="False refusal rate; lower is better">FRR</button>
+              </div>
             </div>
             <div class="bars" id="breakdown-chart"></div>
           </div>
