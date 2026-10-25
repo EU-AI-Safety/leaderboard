@@ -97,6 +97,9 @@ function renderTable() {
 function populateModels() {
   const select = document.getElementById("analysis-model");
   select.innerHTML = state.data.models.map((model) => `<option value="${model.slug}">${model.name}</option>`).join("");
+  const heatmapSelect = document.getElementById("heatmap-model");
+  heatmapSelect.innerHTML = `<option value="overall">Overall · 17-model mean</option>` +
+    state.data.models.map((model) => `<option value="${model.slug}">${model.name}</option>`).join("");
 }
 
 function renderAnalysis() {
@@ -131,12 +134,17 @@ function renderAnalysis() {
       <span class="bar-track"><span class="bar-fill" style="width:${metrics[metric] * 100}%; animation-delay:${Math.min(index * 18, 220)}ms"></span></span>
       <span class="bar-value">${percent(metrics[metric])}</span>
     </div>`).join("");
-  renderHeatmap(model);
+  renderHeatmap();
 }
 
-function renderHeatmap(model) {
-  const languages = Object.keys(model.by_language);
-  const categories = Object.keys(model.by_category);
+function renderHeatmap() {
+  const selected = document.getElementById("heatmap-model").value || "overall";
+  const sourceModels = selected === "overall"
+    ? state.data.models
+    : [state.data.models.find((model) => model.slug === selected)];
+  const reference = sourceModels[0];
+  const languages = Object.keys(reference.by_language);
+  const categories = Object.keys(reference.by_category);
   const metric = state.analysisMetric;
   const shortLanguage = (language) => language.slice(0, 3).toUpperCase();
   const cells = [];
@@ -145,12 +153,14 @@ function renderHeatmap(model) {
   categories.forEach((category) => {
     cells.push(`<span class="heat-row" title="${category}">${category}</span>`);
     languages.forEach((language) => {
-      const values = model.by_category_language[`${category}|${language}`];
-      const value = values[metric];
+      const modelValues = sourceModels.map((model) => model.by_category_language[`${category}|${language}`]);
+      const values = modelValues[0];
+      const value = modelValues.reduce((sum, item) => sum + item[metric], 0) / modelValues.length;
       const quality = metric === "macro_f1" ? value : 1 - value;
       const hue = 5 + quality * 125;
       const lightness = 43 + quality * 9;
-      cells.push(`<span class="heat-cell" style="background:hsl(${hue} 67% ${lightness}%)" title="${category} · ${language}\n${labels[metric]}: ${percent(value)}\nShould refuse: ${values.n_should_refuse.toLocaleString()} · Should answer: ${values.n_should_answer.toLocaleString()}"></span>`);
+      const scope = selected === "overall" ? "17-model mean" : sourceModels[0].name;
+      cells.push(`<span class="heat-cell" style="background:hsl(${hue} 67% ${lightness}%)" title="${category} · ${language}\n${scope}\n${labels[metric]}: ${percent(value)}\nItems/model: ${values.n.toLocaleString()} · Should refuse: ${values.n_should_refuse.toLocaleString()} · Should answer: ${values.n_should_answer.toLocaleString()}"></span>`);
     });
   });
   const heatmap = document.getElementById("category-language-heatmap");
@@ -232,6 +242,7 @@ document.querySelectorAll("[data-resource-metric]").forEach((button) => button.a
 }));
 
 document.getElementById("analysis-model").addEventListener("change", renderAnalysis);
+document.getElementById("heatmap-model").addEventListener("change", renderHeatmap);
 
 loadData().catch((error) => {
   document.getElementById("leaderboard-body").innerHTML = `<tr><td colspan="8" class="loading">${error.message}. Serve this directory over HTTP to view the leaderboard.</td></tr>`;

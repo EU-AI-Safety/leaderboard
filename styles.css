@@ -158,7 +158,10 @@ tbody tr:last-child td { border-bottom: 0; }
 .heatmap-block { margin-top: 38px; padding: 25px; border: 1px solid #376a5d; }
 .heatmap-heading { display: flex; justify-content: space-between; align-items: end; gap: 30px; margin-bottom: 22px; }
 .heatmap-heading h3 { margin: 0; font-size: 24px; }
-.heatmap-heading > p { max-width: 440px; margin: 0; color: #a7bdb5; font-size: 11px; line-height: 1.55; }
+.heatmap-controls { width: min(440px, 45%); }
+.heatmap-controls label { display: block; margin-bottom: 6px; color: #a7bdb5; font: 9px var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+.heatmap-controls select { width: 100%; padding: 9px 10px; color: white; background: #0c5a47; border: 1px solid #4b8071; outline: 0; }
+.heatmap-controls p { margin: 7px 0 0; color: #a7bdb5; font-size: 10px; line-height: 1.45; }
 .heatmap-scroll { overflow-x: auto; padding-bottom: 8px; }
 .heatmap { display: grid; grid-auto-rows: 28px; gap: 3px; min-width: max-content; align-items: center; }
 .heat-col { align-self: end; color: #a7bdb5; font: 8px var(--mono); text-align: center; transform: rotate(-55deg); transform-origin: center; }
@@ -227,7 +230,7 @@ footer .brand-mark::before, footer .brand-mark::after, footer .brand-mark span {
   .resource-chart-panel { padding: 15px 8px; }
   .heatmap-block { padding: 18px 10px; }
   .heatmap-heading { display: block; }
-  .heatmap-heading > p { margin-top: 10px; }
+  .heatmap-controls { width: 100%; margin-top: 15px; }
   .panel-header { display: block; }
   .breakdown-tabs { overflow-x: auto; }
   .analysis-metrics { margin-top: 8px; padding: 8px 0 0; border-top: 1px solid #376a5d; border-left: 0; }

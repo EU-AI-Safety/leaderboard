@@ -140,7 +140,11 @@
         <div class="heatmap-block">
           <div class="heatmap-heading">
             <div><p class="kicker">Interaction view</p><h3>Category × language hotspots</h3></div>
-            <p>Each cell uses the selected model and metric above. Hover for the score and class denominators.</p>
+            <div class="heatmap-controls">
+              <label for="heatmap-model">Model</label>
+              <select id="heatmap-model"></select>
+              <p>Uses the metric selected above. Hover for the score and class denominators.</p>
+            </div>
           </div>
           <div class="heatmap-scroll"><div class="heatmap" id="category-language-heatmap"></div></div>
           <div class="heatmap-legend"><span>Worse</span><i></i><span>Better</span><em id="heatmap-metric">Macro-F1</em></div>
