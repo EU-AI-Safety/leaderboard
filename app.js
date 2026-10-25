@@ -173,31 +173,49 @@ function renderResourceChart() {
   const analysis = state.data.resource_analysis;
   const metric = state.resourceMetric;
   const stats = analysis.metrics[metric];
-  const points = analysis.points;
+  const resources = Object.fromEntries(analysis.points.map((point) => [point.language, point.hplt_cleaned_words]));
+  const models = state.data.models;
   const svg = document.getElementById("resource-chart");
-  const width = 900, height = 430, left = 62, right = 25, top = 25, bottom = 48;
-  const xValues = points.map((point) => Math.log10(point.hplt_cleaned_words));
-  const yValues = points.map((point) => point[metric]);
+  const width = 980, height = 520, left = 65, right = 25, top = 28, bottom = 52;
+  const languages = Object.keys(resources);
+  const xValues = languages.map((language) => Math.log10(resources[language]));
+  const yValues = models.flatMap((model) => languages.map((language) => model.by_language[language][metric]));
   const xMin = Math.floor(Math.min(...xValues)), xMax = Math.ceil(Math.max(...xValues));
   const yMin = Math.max(0, Math.floor(Math.min(...yValues) * 10) / 10 - .05);
   const yMax = Math.min(1, Math.ceil(Math.max(...yValues) * 10) / 10 + .05);
   const x = (value) => left + (value - xMin) / (xMax - xMin) * (width - left - right);
   const y = (value) => top + (yMax - value) / (yMax - yMin) * (height - top - bottom);
-  const xMean = xValues.reduce((sum, value) => sum + value, 0) / xValues.length;
-  const yMean = yValues.reduce((sum, value) => sum + value, 0) / yValues.length;
-  const slope = xValues.reduce((sum, value, index) => sum + (value - xMean) * (yValues[index] - yMean), 0) / xValues.reduce((sum, value) => sum + (value - xMean) ** 2, 0);
-  const intercept = yMean - slope * xMean;
-  const notable = new Set(["English", "Irish", "Maltese", "Hungarian", "Portuguese", "Korean", "Japanese"]);
+  const palette = ["#2f7ebc", "#f08a32", "#55a868", "#c17cbe", "#e05a59", "#8c6d5a", "#63b6af", "#b9a233", "#9a7bc1", "#dd7ab4", "#7394c8", "#e59f6b", "#7cae71", "#b3b3b3", "#d46b6b", "#69a1d1", "#8b8b56"];
+  const fit = (values, inputs = xValues) => {
+    const xMean = inputs.reduce((sum, value) => sum + value, 0) / inputs.length;
+    const yMean = values.reduce((sum, value) => sum + value, 0) / values.length;
+    const slope = inputs.reduce((sum, value, index) => sum + (value - xMean) * (values[index] - yMean), 0) / inputs.reduce((sum, value) => sum + (value - xMean) ** 2, 0);
+    const intercept = yMean - slope * xMean;
+    const numerator = inputs.reduce((sum, value, index) => sum + (value - xMean) * (values[index] - yMean), 0);
+    const denominator = Math.sqrt(inputs.reduce((sum, value) => sum + (value - xMean) ** 2, 0) * values.reduce((sum, value) => sum + (value - yMean) ** 2, 0));
+    return { slope, intercept, correlation: numerator / denominator };
+  };
   let markup = "";
   for (let tick = Math.ceil(yMin * 10) / 10; tick <= yMax + .001; tick += .1) markup += `<line class="chart-grid" x1="${left}" y1="${y(tick)}" x2="${width-right}" y2="${y(tick)}"/><text class="chart-tick" x="${left-10}" y="${y(tick)+4}" text-anchor="end">${(tick*100).toFixed(0)}</text>`;
-  for (let tick = xMin; tick <= xMax; tick++) markup += `<text class="chart-tick" x="${x(tick)}" y="${height-18}" text-anchor="middle">10^${tick}</text>`;
-  markup += `<line class="trend-line" x1="${x(xMin)}" y1="${y(slope*xMin+intercept)}" x2="${x(xMax)}" y2="${y(slope*xMax+intercept)}"/>`;
-  points.forEach((point) => {
-    const cx = x(Math.log10(point.hplt_cleaned_words)), cy = y(point[metric]);
-    markup += `<circle class="resource-point" cx="${cx}" cy="${cy}" r="5"><title>${point.language}\nHPLT words: ${point.hplt_cleaned_words.toLocaleString()}\n${labels[metric]}: ${percent(point[metric])}</title></circle>`;
-    if (notable.has(point.language)) markup += `<text class="point-label" x="${cx+7}" y="${cy-7}">${point.language}</text>`;
+  for (let tick = xMin; tick <= xMax; tick++) {
+    markup += `<line class="chart-grid vertical" x1="${x(tick)}" y1="${top}" x2="${x(tick)}" y2="${height-bottom}"/><text class="chart-tick" x="${x(tick)}" y="${height-18}" text-anchor="middle">10^${tick}</text>`;
+  }
+  const legend = [];
+  models.forEach((model, modelIndex) => {
+    const color = palette[modelIndex];
+    const values = languages.map((language) => model.by_language[language][metric]);
+    const regression = fit(values);
+    markup += `<line class="model-trend" style="stroke:${color}" x1="${x(xMin)}" y1="${y(regression.slope*xMin+regression.intercept)}" x2="${x(xMax)}" y2="${y(regression.slope*xMax+regression.intercept)}"/>`;
+    languages.forEach((language, index) => {
+      markup += `<circle class="model-resource-point" style="fill:${color}" cx="${x(xValues[index])}" cy="${y(values[index])}" r="3.8"><title>${model.name} · ${language}\nHPLT words: ${resources[language].toLocaleString()}\n${labels[metric]}: ${percent(values[index])}</title></circle>`;
+    });
+    legend.push(`<span><i style="background:${color}"></i>${model.name}<b>${regression.correlation >= 0 ? "+" : ""}${regression.correlation.toFixed(2)}</b></span>`);
   });
+  const pooledInputs = models.flatMap(() => xValues);
+  const pooledFit = fit(yValues, pooledInputs);
+  markup += `<line class="pooled-trend" x1="${x(xMin)}" y1="${y(pooledFit.slope*xMin+pooledFit.intercept)}" x2="${x(xMax)}" y2="${y(pooledFit.slope*xMax+pooledFit.intercept)}"/>`;
   svg.innerHTML = markup;
+  document.getElementById("resource-model-legend").innerHTML = legend.join("") + `<span class="pooled-key"><i></i>Pooled trend<b>${pooledFit.correlation >= 0 ? "+" : ""}${pooledFit.correlation.toFixed(2)}</b></span>`;
   document.getElementById("resource-correlation").textContent = `r = ${stats.pearson.toFixed(2)}`;
   document.getElementById("resource-interval").textContent = `95% CI [${stats.pearson_95ci[0].toFixed(2)}, ${stats.pearson_95ci[1].toFixed(2)}] · ρ = ${stats.spearman.toFixed(2)}`;
   const supported = stats.pearson_95ci[0] * stats.pearson_95ci[1] > 0;
