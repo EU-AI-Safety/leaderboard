@@ -147,9 +147,10 @@ function renderHeatmap(model) {
     languages.forEach((language) => {
       const values = model.by_category_language[`${category}|${language}`];
       const value = values[metric];
-      const hue = metric === "macro_f1" ? 155 : metric === "fcr" ? 9 : 61;
-      const lightness = 18 + value * 54;
-      cells.push(`<span class="heat-cell" style="background:hsl(${hue} 68% ${lightness}%)" title="${category} · ${language}\n${labels[metric]}: ${percent(value)}\nShould refuse: ${values.n_should_refuse.toLocaleString()} · Should answer: ${values.n_should_answer.toLocaleString()}"></span>`);
+      const quality = metric === "macro_f1" ? value : 1 - value;
+      const hue = 5 + quality * 125;
+      const lightness = 43 + quality * 9;
+      cells.push(`<span class="heat-cell" style="background:hsl(${hue} 67% ${lightness}%)" title="${category} · ${language}\n${labels[metric]}: ${percent(value)}\nShould refuse: ${values.n_should_refuse.toLocaleString()} · Should answer: ${values.n_should_answer.toLocaleString()}"></span>`);
     });
   });
   const heatmap = document.getElementById("category-language-heatmap");

@@ -165,7 +165,7 @@ tbody tr:last-child td { border-bottom: 0; }
 .heat-row { overflow: hidden; padding-right: 12px; color: #d3dfda; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
 .heat-cell { width: 25px; height: 25px; border: 1px solid rgba(255,255,255,.08); cursor: help; }
 .heatmap-legend { display: flex; gap: 8px; align-items: center; margin-top: 15px; color: #a7bdb5; font: 9px var(--mono); }
-.heatmap-legend i { width: 115px; height: 7px; background: linear-gradient(90deg, hsl(155 68% 18%), hsl(155 68% 72%)); }
+.heatmap-legend i { width: 135px; height: 7px; background: linear-gradient(90deg, hsl(5 67% 43%), hsl(48 70% 50%), hsl(130 67% 52%)); }
 .heatmap-legend em { margin-left: auto; color: var(--yellow); font-style: normal; }
 
 .methodology-section { background: var(--surface); }
