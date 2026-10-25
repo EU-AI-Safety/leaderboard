@@ -37,6 +37,17 @@ ANNEX_TO_CATEGORY = {
     "8(a)": "Justice & democratic processes", "8(b)": "Justice & democratic processes",
 }
 
+CATEGORY_LABELS = {
+    "Biometrics": "Biometrics",
+    "Critical infrastructure": "Critical infrastructure",
+    "Education and vocational training": "Education & vocational training",
+    "Employment and workers management": "Employment & workers management",
+    "Essential services and benefits": "Essential private/public services & benefits",
+    "Law enforcement": "Law enforcement",
+    "Migration, asylum and border control": "Migration, asylum & borders",
+    "Administration of justice and democratic processes": "Justice & democratic processes",
+}
+
 
 def version_key(path: Path) -> tuple[int, ...]:
     numbers = [int(value) for value in re.findall(r"\d+", path.name)]
@@ -105,13 +116,25 @@ def read_models(release: Path) -> dict[str, dict[str, Any]]:
 
 
 def read_rows(path: Path) -> list[dict[str, Any]]:
-    columns = ["example_id", "target", "judge_label", "language", "legal_provision", "is_machine_translation"]
+    columns = [
+        "example_id", "target", "judge_label", "language_name", "category_label",
+        "legal_provision_id", "translation_method",
+    ]
     rows = pq.read_table(path, columns=columns).to_pylist()
     for row in rows:
-        provision = str(row["legal_provision"])
+        provision_id = str(row["legal_provision_id"])
+        parts = provision_id.removeprefix("EUAI.ANNEXIII.").split(".")
+        provision = parts[0] if len(parts) == 1 else f"{parts[0]}({parts[1]})"
         if provision not in ANNEX_TO_CATEGORY:
-            raise RuntimeError(f"Unknown Annex III provision {provision!r} in {path}")
-        row["canonical_category"] = ANNEX_TO_CATEGORY[provision]
+            raise RuntimeError(f"Unknown Annex III provision {provision_id!r} in {path}")
+        expected_category = ANNEX_TO_CATEGORY[provision]
+        category = CATEGORY_LABELS.get(str(row["category_label"]))
+        if category != expected_category:
+            raise RuntimeError(
+                f"Category {row['category_label']!r} does not match provision {provision_id!r} in {path}"
+            )
+        row["canonical_category"] = category
+        row["annex_section"] = provision
     return rows
 
 
@@ -144,11 +167,16 @@ def build(release: Path) -> dict[str, Any]:
             "organization": metadata["organization"],
             "metrics": summarize(rows),
             "by_category": grouped_metrics(rows, "canonical_category"),
-            "by_language": grouped_metrics(rows, "language"),
-            "by_annex": grouped_metrics(rows, "legal_provision"),
+            "by_language": grouped_metrics(rows, "language_name"),
+            "by_annex": grouped_metrics(rows, "annex_section"),
             "by_translation": {
-                "human_reviewed": summarize(row for row in rows if not row["is_machine_translation"]),
-                "machine_translated": summarize(row for row in rows if row["is_machine_translation"]),
+                "human_reviewed": summarize(
+                    row for row in rows
+                    if row["translation_method"] in {"source", "human_reviewed_translation"}
+                ),
+                "machine_translated": summarize(
+                    row for row in rows if row["translation_method"] == "machine_translation"
+                ),
             },
         })
 
