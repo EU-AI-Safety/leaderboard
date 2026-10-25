@@ -94,6 +94,7 @@ tbody tr:last-child td { border-bottom: 0; }
 .resource-summary { display: grid; grid-template-columns: 180px 260px 1fr auto; gap: 20px; align-items: center; margin-bottom: 15px; padding: 15px 18px; background: var(--surface); border: 1px solid #c9cec3; }
 .resource-summary div > span { display: block; color: var(--muted); font: 9px var(--mono); text-transform: uppercase; }
 .resource-summary strong { color: var(--green); font: 500 19px var(--mono); }
+#resource-interval { display: block; font-size: 13px; letter-spacing: -.025em; white-space: nowrap; }
 .resource-summary > p { margin: 0; color: var(--muted); font-size: 11px; line-height: 1.5; }
 .resource-metrics { display: flex; gap: 3px; }
 .resource-metrics button { padding: 9px 11px; color: var(--muted); background: transparent; border: 1px solid var(--line); cursor: pointer; font: 500 10px var(--mono); }
