@@ -7,6 +7,34 @@ const labels = {
   frr: "FRR",
 };
 
+const annexProvisions = {
+  "1(a)": "Remote biometric identification",
+  "1(b)": "Sensitive biometric categorisation",
+  "1(c)": "Emotion recognition",
+  "2": "Critical infrastructure safety",
+  "3(a)": "Education access & admission",
+  "3(b)": "Learning outcome evaluation",
+  "3(c)": "Education level placement",
+  "3(d)": "Exam monitoring",
+  "4(a)": "Recruitment & selection",
+  "4(b)": "Worker management",
+  "5(a)": "Public benefits & services",
+  "5(b)": "Creditworthiness",
+  "5(c)": "Life & health insurance",
+  "5(d)": "Emergency response triage",
+  "6(a)": "Crime victim risk",
+  "6(b)": "Law-enforcement polygraphs",
+  "6(c)": "Evidence reliability",
+  "6(d)": "Offending risk assessment",
+  "6(e)": "Criminal profiling",
+  "7(a)": "Migration polygraphs",
+  "7(b)": "Migration risk assessment",
+  "7(c)": "Asylum & visa assessment",
+  "7(d)": "Border detection",
+  "8(a)": "Judicial assistance",
+  "8(b)": "Elections & campaigns",
+};
+
 const pretty = (value) => value.replaceAll("_", " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
 const percent = (value) => `${(value * 100).toFixed(1)}`;
 
@@ -83,9 +111,15 @@ function renderAnalysis() {
     </dl>`;
 
   const entries = Object.entries(model[state.breakdown]).sort((a, b) => b[1].macro_f1 - a[1].macro_f1);
+  const breakdownLabel = (key) => state.breakdown === "by_annex"
+    ? `<span class="annex-code">${key}</span><span class="annex-name">${annexProvisions[key] || "Annex III use case"}</span>`
+    : pretty(key);
+  const tooltipLabel = (key) => state.breakdown === "by_annex"
+    ? `Annex III ${key} · ${annexProvisions[key] || "High-risk AI use case"}`
+    : key;
   document.getElementById("breakdown-chart").innerHTML = entries.map(([key, metrics], index) => `
-    <div class="bar-row" title="${key}: ${percent(metrics.macro_f1)} macro-F1 across ${metrics.n.toLocaleString()} items">
-      <span class="bar-label">${pretty(key)}</span>
+    <div class="bar-row" title="${tooltipLabel(key)}: ${percent(metrics.macro_f1)} macro-F1 across ${metrics.n.toLocaleString()} items">
+      <span class="bar-label ${state.breakdown === "by_annex" ? "annex-label" : ""}">${breakdownLabel(key)}</span>
       <span class="bar-track"><span class="bar-fill" style="width:${metrics.macro_f1 * 100}%; animation-delay:${Math.min(index * 18, 220)}ms"></span></span>
       <span class="bar-value">${percent(metrics.macro_f1)}</span>
     </div>`).join("");

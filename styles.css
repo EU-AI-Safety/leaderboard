@@ -110,6 +110,9 @@ tbody tr:last-child td { border-bottom: 0; }
 .bars { max-height: 510px; padding: 18px 25px; overflow-y: auto; scrollbar-color: #4f8a78 transparent; }
 .bar-row { display: grid; grid-template-columns: minmax(120px, 240px) 1fr 50px; align-items: center; gap: 15px; min-height: 37px; font-size: 11px; }
 .bar-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.annex-label { display: flex; align-items: center; gap: 9px; min-width: 0; }
+.annex-code { flex: 0 0 38px; padding: 3px 0; color: var(--yellow); border: 1px solid #4f8073; text-align: center; font: 500 10px var(--mono); }
+.annex-name { overflow: hidden; color: #d3dfda; text-overflow: ellipsis; white-space: nowrap; }
 .bar-track { height: 6px; background: #235f50; }
 .bar-fill { display: block; height: 100%; background: var(--mint); transform-origin: left; animation: reveal .55s ease both; }
 .bar-value { color: var(--yellow); font: 11px var(--mono); text-align: right; }
@@ -172,6 +175,7 @@ footer .brand-mark::before, footer .brand-mark::after, footer .brand-mark span {
   .breakdown-tabs { overflow-x: auto; }
   .panel-header > span { display: none; }
   .bar-row { grid-template-columns: 105px 1fr 42px; gap: 8px; }
+  .annex-name { display: none; }
   .method-grid, .definitions { grid-template-columns: 1fr; }
   .method-grid article { border-right: 0; border-bottom: 1px solid var(--line); }
   .method-grid article:last-child { border-bottom: 0; }
