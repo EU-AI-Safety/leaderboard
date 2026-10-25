@@ -6,9 +6,13 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import math
+import random
 import re
+from collections import Counter
 from collections import defaultdict
 from pathlib import Path
+from statistics import mean
 from typing import Any, Iterable
 
 try:
@@ -46,6 +50,21 @@ CATEGORY_LABELS = {
     "Law enforcement": "Law enforcement",
     "Migration, asylum and border control": "Migration, asylum & borders",
     "Administration of justice and democratic processes": "Justice & democratic processes",
+}
+
+HPLT_CLEANED_WORDS = {
+    "English": 2.86e12, "Russian": 540.88e9, "Spanish": 321.95e9,
+    "German": 251.48e9, "French": 237.04e9, "Portuguese": 146.27e9,
+    "Italian": 127.41e9, "Polish": 89.53e9, "Chinese": 74.01e9,
+    "Dutch": 71.40e9, "Turkish": 51.67e9, "Arabic": 48.14e9,
+    "Greek": 42.70e9, "Japanese": 42.36e9, "Czech": 42.08e9,
+    "Swedish": 40.10e9, "Romanian": 40.05e9, "Hungarian": 30.52e9,
+    "Ukrainian": 25.23e9, "Norwegian": 21.53e9, "Danish": 21.20e9,
+    "Korean": 19.69e9, "Finnish": 18.45e9, "Bulgarian": 15.30e9,
+    "Slovak": 10.63e9, "Catalan": 10.02e9, "Hindi": 8.64e9,
+    "Croatian": 7.31e9, "Lithuanian": 6.68e9, "Slovenian": 5.43e9,
+    "Estonian": 4.74e9, "Latvian": 3.46e9, "Galician": 1.64e9,
+    "Irish": 0.29571e9, "Maltese": 0.19581e9,
 }
 
 
@@ -96,6 +115,7 @@ def summarize(rows: Iterable[dict[str, Any]]) -> dict[str, int | float]:
     complied_f1 = safe_div(2 * complied_precision * complied_recall, complied_precision + complied_recall)
     return {
         "n": n, "tp": tp, "fp": fp, "tn": tn, "fn": fn,
+        "n_should_refuse": tp + fn, "n_should_answer": tn + fp,
         "accuracy": safe_div(tp + tn, n),
         "macro_f1": (refused_f1 + complied_f1) / 2,
         "f1_refused": refused_f1, "f1_complied": complied_f1,
@@ -110,6 +130,131 @@ def grouped_metrics(rows: list[dict[str, Any]], field: str) -> dict[str, dict[st
     return {key: summarize(group) for key, group in sorted(groups.items())}
 
 
+def grouped_pair_metrics(rows: list[dict[str, Any]], first: str, second: str) -> dict[str, dict[str, int | float]]:
+    groups: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for row in rows:
+        groups[f"{row[first]}|{row[second]}"] .append(row)
+    return {
+        key: {
+            metric: summary[metric]
+            for metric in ("n", "n_should_refuse", "n_should_answer", "macro_f1", "fcr", "frr")
+        }
+        for key, group in sorted(groups.items())
+        for summary in [summarize(group)]
+    }
+
+
+def language_equity(language_metrics: dict[str, dict[str, int | float]]) -> dict[str, Any]:
+    ordered = sorted(
+        ((float(metrics["macro_f1"]), language) for language, metrics in language_metrics.items()),
+        reverse=True,
+    )
+    english = float(language_metrics["English"]["macro_f1"])
+    non_english = [
+        float(metrics["macro_f1"])
+        for language, metrics in language_metrics.items()
+        if language != "English"
+    ]
+    return {
+        "best_language": ordered[0][1], "best_macro_f1": ordered[0][0],
+        "worst_language": ordered[-1][1], "worst_macro_f1": ordered[-1][0],
+        "range": ordered[0][0] - ordered[-1][0],
+        "english_macro_f1": english,
+        "non_english_macro_f1_mean": mean(non_english),
+        "english_gap": english - mean(non_english),
+    }
+
+
+def cross_language_consistency(rows: list[dict[str, Any]]) -> dict[str, float | int]:
+    concepts: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for row in rows:
+        concepts[str(row["concept_id"])].append(row)
+    agreements = []
+    unanimous = 0
+    for family in concepts.values():
+        counts = Counter(row["judge_label"] for row in family)
+        unanimous += len(counts) == 1
+        total = sum(counts.values())
+        agreements.append(
+            safe_div(sum(count * (count - 1) / 2 for count in counts.values()), total * (total - 1) / 2)
+        )
+    return {
+        "concepts": len(concepts),
+        "pairwise_agreement": mean(agreements),
+        "unanimity_rate": safe_div(unanimous, len(concepts)),
+    }
+
+
+def correlation(x: list[float], y: list[float]) -> float:
+    x_mean, y_mean = mean(x), mean(y)
+    return safe_div(
+        sum((a - x_mean) * (b - y_mean) for a, b in zip(x, y)),
+        math.sqrt(sum((a - x_mean) ** 2 for a in x) * sum((b - y_mean) ** 2 for b in y)),
+    )
+
+
+def ranks(values: list[float]) -> list[float]:
+    order = sorted(range(len(values)), key=values.__getitem__)
+    result = [0.0] * len(values)
+    index = 0
+    while index < len(order):
+        end = index
+        while end + 1 < len(order) and values[order[end + 1]] == values[order[index]]:
+            end += 1
+        rank = (index + end) / 2 + 1
+        for position in range(index, end + 1):
+            result[order[position]] = rank
+        index = end + 1
+    return result
+
+
+def percentile(values: list[float], quantile: float) -> float:
+    values = sorted(values)
+    position = (len(values) - 1) * quantile
+    low, high = math.floor(position), math.ceil(position)
+    if low == high:
+        return values[low]
+    return values[low] * (high - position) + values[high] * (position - low)
+
+
+def bootstrap_correlation(x: list[float], y: list[float], rank: bool, seed: int) -> list[float]:
+    rng = random.Random(seed)
+    estimates = []
+    for _ in range(10000):
+        sample = [rng.randrange(len(x)) for _ in x]
+        sample_x = [x[index] for index in sample]
+        sample_y = [y[index] for index in sample]
+        if len(set(sample_x)) < 2 or len(set(sample_y)) < 2:
+            continue
+        estimates.append(correlation(ranks(sample_x), ranks(sample_y)) if rank else correlation(sample_x, sample_y))
+    return [percentile(estimates, 0.025), percentile(estimates, 0.975)]
+
+
+def resource_analysis(models: list[dict[str, Any]]) -> dict[str, Any]:
+    languages = sorted(HPLT_CLEANED_WORDS)
+    points = []
+    for language in languages:
+        points.append({
+            "language": language,
+            "hplt_cleaned_words": HPLT_CLEANED_WORDS[language],
+            **{
+                metric: mean(float(model["by_language"][language][metric]) for model in models)
+                for metric in ("macro_f1", "fcr", "frr")
+            },
+        })
+    x = [math.log10(point["hplt_cleaned_words"]) for point in points]
+    metrics = {}
+    for offset, metric in enumerate(("macro_f1", "fcr", "frr")):
+        y = [point[metric] for point in points]
+        metrics[metric] = {
+            "pearson": correlation(x, y),
+            "pearson_95ci": bootstrap_correlation(x, y, False, 20261025 + offset),
+            "spearman": correlation(ranks(x), ranks(y)),
+            "spearman_95ci": bootstrap_correlation(x, y, True, 20261125 + offset),
+        }
+    return {"points": points, "metrics": metrics, "resource_proxy": "HPLT v2 cleaned words"}
+
+
 def read_models(release: Path) -> dict[str, dict[str, Any]]:
     payload = json.loads((release / "manifests" / "models.json").read_text(encoding="utf-8"))
     return {model["slug"]: model for model in payload["models"]}
@@ -117,7 +262,7 @@ def read_models(release: Path) -> dict[str, dict[str, Any]]:
 
 def read_rows(path: Path) -> list[dict[str, Any]]:
     columns = [
-        "example_id", "target", "judge_label", "language_name", "category_label",
+        "concept_id", "example_id", "target", "judge_label", "language_name", "category_label",
         "legal_provision_id", "translation_method",
     ]
     rows = pq.read_table(path, columns=columns).to_pylist()
@@ -159,6 +304,7 @@ def build(release: Path) -> dict[str, Any]:
         example_sets.append(examples)
 
         metadata = model_metadata[slug]
+        language_metrics = grouped_metrics(rows, "language_name")
         models.append({
             "slug": slug,
             "name": metadata["name"],
@@ -167,8 +313,11 @@ def build(release: Path) -> dict[str, Any]:
             "organization": metadata["organization"],
             "metrics": summarize(rows),
             "by_category": grouped_metrics(rows, "canonical_category"),
-            "by_language": grouped_metrics(rows, "language_name"),
+            "by_language": language_metrics,
             "by_annex": grouped_metrics(rows, "annex_section"),
+            "by_category_language": grouped_pair_metrics(rows, "canonical_category", "language_name"),
+            "language_equity": language_equity(language_metrics),
+            "cross_language_consistency": cross_language_consistency(rows),
             "by_translation": {
                 "human_reviewed": summarize(
                     row for row in rows
@@ -211,6 +360,7 @@ def build(release: Path) -> dict[str, Any]:
             "parse_failures": 0,
         },
         "models": models,
+        "resource_analysis": resource_analysis(models),
     }
 
 

@@ -26,6 +26,15 @@ The Hugging Face release repository is required only to regenerate the leaderboa
 
 The generated metadata records the exact source release, scored rows per model, canonical item count, cross-model shared coverage, and any residual coverage gap. The current release retains a small model-specific legacy provenance difference; this is reported rather than silently discarded. Regenerate and redeploy this directory after a new minor release is added to `eu_guard_generations_v1-hf`.
 
+The generated site also includes release-native research views:
+
+- HPLT language-resource correlation with 10,000 language bootstrap samples.
+- Per-model language-equity summaries.
+- Category-by-language Macro-F1, FCR, and FRR heatmaps with class denominators.
+- Cross-language response-label agreement as a stability diagnostic.
+
+The resource analysis is an association with public corpus availability, not a measurement of each model's training mixture or a causal estimate. Stability is shown alongside performance because a model can be consistently wrong.
+
 ## Preview the site
 
 ```bash

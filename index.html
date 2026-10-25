@@ -18,6 +18,7 @@
       </a>
       <nav aria-label="Primary navigation">
         <a href="#leaderboard">Leaderboard</a>
+        <a href="#resource-gap">Key finding</a>
         <a href="#analysis">Analysis</a>
         <a href="#methodology">Methodology</a>
       </nav>
@@ -73,6 +74,36 @@
         <p class="table-note" id="table-note">Lower is better for FCR and FRR. Release coverage and provenance details load with the results.</p>
       </section>
 
+      <section class="section resource-section" id="resource-gap">
+        <div class="section-heading">
+          <div>
+            <p class="kicker">Key finding</p>
+            <h2>Safety degrades as language resources decline.</h2>
+          </div>
+          <p>Across 35 languages, lower HPLT corpus availability is associated with lower safety performance and higher false-compliance rates across all 17 models.</p>
+        </div>
+        <div class="resource-layout">
+          <aside class="finding-card">
+            <p class="finding-label">Resource association</p>
+            <strong id="resource-correlation">r = 0.70</strong>
+            <p id="resource-interval">95% CI [0.45, 0.86]</p>
+            <div class="finding-rule"></div>
+            <p id="resource-interpretation">Higher language-resource availability is associated with higher macro-F1.</p>
+            <div class="resource-metrics" role="group" aria-label="Language resource metric">
+              <button class="active" data-resource-metric="macro_f1">Macro-F1</button>
+              <button data-resource-metric="fcr">FCR</button>
+              <button data-resource-metric="frr">FRR</button>
+            </div>
+          </aside>
+          <div class="resource-chart-panel">
+            <div class="chart-axis-title">Model-averaged score</div>
+            <svg id="resource-chart" viewBox="0 0 900 430" role="img" aria-label="Language resources compared with EU-Guard performance"></svg>
+            <div class="resource-x-label">HPLT v2 cleaned words <span>log scale</span></div>
+          </div>
+        </div>
+        <p class="research-note">HPLT volume is a corpus-availability proxy, not measured model training exposure. The result is an association and may also reflect post-training coverage, translation quality, tokenization, and judge behavior.</p>
+      </section>
+
       <section class="section analysis-section" id="analysis">
         <div class="section-heading">
           <div>
@@ -87,6 +118,7 @@
             <label for="analysis-model">Model profile</label>
             <select id="analysis-model"></select>
             <div class="model-card" id="model-card"></div>
+            <div class="equity-card" id="equity-card"></div>
           </aside>
           <div class="breakdown-panel">
             <div class="panel-header">
@@ -104,6 +136,14 @@
             </div>
             <div class="bars" id="breakdown-chart"></div>
           </div>
+        </div>
+        <div class="heatmap-block">
+          <div class="heatmap-heading">
+            <div><p class="kicker">Interaction view</p><h3>Category × language hotspots</h3></div>
+            <p>Each cell uses the selected model and metric above. Hover for the score and class denominators.</p>
+          </div>
+          <div class="heatmap-scroll"><div class="heatmap" id="category-language-heatmap"></div></div>
+          <div class="heatmap-legend"><span>Lower</span><i></i><span>Higher</span><em id="heatmap-metric">Macro-F1</em></div>
         </div>
       </section>
 

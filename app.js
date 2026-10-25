@@ -1,4 +1,4 @@
-const state = { data: null, metric: "macro_f1", analysisMetric: "macro_f1", breakdown: "by_language", query: "" };
+const state = { data: null, metric: "macro_f1", analysisMetric: "macro_f1", resourceMetric: "macro_f1", breakdown: "by_language", query: "" };
 
 const labels = {
   macro_f1: "Macro-F1",
@@ -45,6 +45,7 @@ async function loadData() {
   renderStats();
   populateModels();
   renderTable();
+  renderResourceChart();
   renderAnalysis();
 }
 
@@ -109,6 +110,12 @@ function renderAnalysis() {
       <div><dt>False refusal</dt><dd>${percent(model.metrics.frr)}</dd></div>
       <div><dt>Evaluated items</dt><dd>${model.metrics.n.toLocaleString()}</dd></div>
     </dl>`;
+  const equity = model.language_equity;
+  document.getElementById("equity-card").innerHTML = `
+    <p class="equity-title">Language equity</p>
+    <div class="equity-gap"><strong>${percent(equity.english_gap)}</strong><span>English advantage over non-English mean</span></div>
+    <div class="equity-range"><span><b>${equity.best_language}</b>${percent(equity.best_macro_f1)}</span><i></i><span><b>${equity.worst_language}</b>${percent(equity.worst_macro_f1)}</span></div>
+    <p>${percent(model.cross_language_consistency.pairwise_agreement)} mean pairwise response-label agreement across localized variants.</p>`;
 
   const metric = state.analysisMetric;
   const entries = Object.entries(model[state.breakdown]).sort((a, b) => b[1][metric] - a[1][metric]);
@@ -124,6 +131,70 @@ function renderAnalysis() {
       <span class="bar-track"><span class="bar-fill" style="width:${metrics[metric] * 100}%; animation-delay:${Math.min(index * 18, 220)}ms"></span></span>
       <span class="bar-value">${percent(metrics[metric])}</span>
     </div>`).join("");
+  renderHeatmap(model);
+}
+
+function renderHeatmap(model) {
+  const languages = Object.keys(model.by_language);
+  const categories = Object.keys(model.by_category);
+  const metric = state.analysisMetric;
+  const shortLanguage = (language) => language.slice(0, 3).toUpperCase();
+  const cells = [];
+  cells.push(`<span class="heat-corner"></span>`);
+  languages.forEach((language) => cells.push(`<span class="heat-col" title="${language}">${shortLanguage(language)}</span>`));
+  categories.forEach((category) => {
+    cells.push(`<span class="heat-row" title="${category}">${category}</span>`);
+    languages.forEach((language) => {
+      const values = model.by_category_language[`${category}|${language}`];
+      const value = values[metric];
+      const hue = metric === "macro_f1" ? 155 : metric === "fcr" ? 9 : 61;
+      const lightness = 18 + value * 54;
+      cells.push(`<span class="heat-cell" style="background:hsl(${hue} 68% ${lightness}%)" title="${category} · ${language}\n${labels[metric]}: ${percent(value)}\nShould refuse: ${values.n_should_refuse.toLocaleString()} · Should answer: ${values.n_should_answer.toLocaleString()}"></span>`);
+    });
+  });
+  const heatmap = document.getElementById("category-language-heatmap");
+  heatmap.style.gridTemplateColumns = `190px repeat(${languages.length}, 25px)`;
+  heatmap.innerHTML = cells.join("");
+  document.getElementById("heatmap-metric").textContent = labels[metric];
+}
+
+function renderResourceChart() {
+  const analysis = state.data.resource_analysis;
+  const metric = state.resourceMetric;
+  const stats = analysis.metrics[metric];
+  const points = analysis.points;
+  const svg = document.getElementById("resource-chart");
+  const width = 900, height = 430, left = 62, right = 25, top = 25, bottom = 48;
+  const xValues = points.map((point) => Math.log10(point.hplt_cleaned_words));
+  const yValues = points.map((point) => point[metric]);
+  const xMin = Math.floor(Math.min(...xValues)), xMax = Math.ceil(Math.max(...xValues));
+  const yMin = Math.max(0, Math.floor(Math.min(...yValues) * 10) / 10 - .05);
+  const yMax = Math.min(1, Math.ceil(Math.max(...yValues) * 10) / 10 + .05);
+  const x = (value) => left + (value - xMin) / (xMax - xMin) * (width - left - right);
+  const y = (value) => top + (yMax - value) / (yMax - yMin) * (height - top - bottom);
+  const xMean = xValues.reduce((sum, value) => sum + value, 0) / xValues.length;
+  const yMean = yValues.reduce((sum, value) => sum + value, 0) / yValues.length;
+  const slope = xValues.reduce((sum, value, index) => sum + (value - xMean) * (yValues[index] - yMean), 0) / xValues.reduce((sum, value) => sum + (value - xMean) ** 2, 0);
+  const intercept = yMean - slope * xMean;
+  const notable = new Set(["English", "Irish", "Maltese", "Hungarian", "Portuguese", "Korean", "Japanese"]);
+  let markup = "";
+  for (let tick = Math.ceil(yMin * 10) / 10; tick <= yMax + .001; tick += .1) markup += `<line class="chart-grid" x1="${left}" y1="${y(tick)}" x2="${width-right}" y2="${y(tick)}"/><text class="chart-tick" x="${left-10}" y="${y(tick)+4}" text-anchor="end">${(tick*100).toFixed(0)}</text>`;
+  for (let tick = xMin; tick <= xMax; tick++) markup += `<text class="chart-tick" x="${x(tick)}" y="${height-18}" text-anchor="middle">10^${tick}</text>`;
+  markup += `<line class="trend-line" x1="${x(xMin)}" y1="${y(slope*xMin+intercept)}" x2="${x(xMax)}" y2="${y(slope*xMax+intercept)}"/>`;
+  points.forEach((point) => {
+    const cx = x(Math.log10(point.hplt_cleaned_words)), cy = y(point[metric]);
+    markup += `<circle class="resource-point" cx="${cx}" cy="${cy}" r="5"><title>${point.language}\nHPLT words: ${point.hplt_cleaned_words.toLocaleString()}\n${labels[metric]}: ${percent(point[metric])}</title></circle>`;
+    if (notable.has(point.language)) markup += `<text class="point-label" x="${cx+7}" y="${cy-7}">${point.language}</text>`;
+  });
+  svg.innerHTML = markup;
+  document.getElementById("resource-correlation").textContent = `r = ${stats.pearson.toFixed(2)}`;
+  document.getElementById("resource-interval").textContent = `95% CI [${stats.pearson_95ci[0].toFixed(2)}, ${stats.pearson_95ci[1].toFixed(2)}] · ρ = ${stats.spearman.toFixed(2)}`;
+  const supported = stats.pearson_95ci[0] * stats.pearson_95ci[1] > 0;
+  document.getElementById("resource-interpretation").textContent = metric === "macro_f1"
+    ? "Higher language-resource availability is associated with higher macro-F1."
+    : metric === "fcr"
+      ? "Lower-resource languages are associated with higher false compliance."
+      : supported ? "Resource availability is associated with false refusal." : "The false-refusal association is weaker and statistically uncertain.";
 }
 
 document.getElementById("model-search").addEventListener("input", (event) => {
@@ -150,6 +221,13 @@ document.querySelectorAll("[data-analysis-metric]").forEach((button) => button.a
   button.classList.add("active");
   state.analysisMetric = button.dataset.analysisMetric;
   renderAnalysis();
+}));
+
+document.querySelectorAll("[data-resource-metric]").forEach((button) => button.addEventListener("click", () => {
+  document.querySelectorAll("[data-resource-metric]").forEach((item) => item.classList.remove("active"));
+  button.classList.add("active");
+  state.resourceMetric = button.dataset.resourceMetric;
+  renderResourceChart();
 }));
 
 document.getElementById("analysis-model").addEventListener("change", renderAnalysis);
