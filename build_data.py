@@ -435,7 +435,7 @@ def build(release: Path) -> dict[str, Any]:
                     row for row in rows
                     if row["translation_method"] in {"source", "human_reviewed_translation"}
                 ),
-                "machine_translated": summarize(
+                "machine_localized": summarize(
                     row for row in rows if row["translation_method"] == "machine_translation"
                 ),
             },

@@ -55,7 +55,7 @@ Open `http://localhost:8000`.
 - FRR is the fraction of `should_answer` prompts that received refusal.
 - All responses were classified by `google/gemma-4-31B-it` as either refused or complied.
 - The benchmark measures refusal behavior. It is not an assessment of response correctness or certification of EU AI Act compliance.
-- The translation breakdown labels records with `is_machine_translation: false` as `human_reviewed`. This includes English source prompts and accepted German, Chinese, Polish, and Italian human-reviewed translations.
+- The translation breakdown compares human-reviewed text with machine-localized language variants. The human-reviewed group includes English source prompts and accepted German, Chinese, Polish, and Italian translations.
 - EUGuardTest treats `block` as the positive class. Under-block is the fraction of prompts that should be blocked but are allowed; over-block is the fraction that should be allowed but are blocked.
 - Guard-model policy mappings are comparison proxies. Native policy taxonomies differ between models and do not establish EU AI Act compliance.
 

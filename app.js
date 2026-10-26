@@ -118,7 +118,7 @@ function renderGuardBenchmark() {
     <div><strong>${track.items_per_model.toLocaleString()}</strong><span>Test items/model</span></div>
     <div><strong>${track.languages}</strong><span>Languages</span></div>
     <div><strong>${track.categories}</strong><span>Risk categories</span></div>
-    <p><b>${primary ? "Primary track" : "Exploratory track"}</b>${primary ? "Accepted source and human-reviewed translations." : "Includes unreviewed machine translations."}</p>`;
+    <p><b>${primary ? "Primary track" : "Extended multilingual track"}</b>${primary ? "Accepted source and human-reviewed translations." : "Broad language coverage with machine-localized variants."}</p>`;
   document.getElementById("guard-leaderboard-body").innerHTML = track.models.map((model) => `
     <tr>
       <td class="rank ${model.rank <= 3 ? "top" : ""}">${String(model.rank).padStart(2, "0")}</td>
