@@ -274,6 +274,7 @@ def language_equity(language_metrics: dict[str, dict[str, int | float]]) -> dict
         "non_english_macro_f1_mean": mean(non_english),
         "english_gap": english - mean(non_english),
     }
+    return payload
 
 
 def cross_language_consistency(rows: list[dict[str, Any]]) -> dict[str, float | int]:

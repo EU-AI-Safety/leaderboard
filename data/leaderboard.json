@@ -3311,7 +3311,16 @@
           "frr": 0.3157894736842105
         }
       },
-      "language_equity": null,
+      "language_equity": {
+        "best_language": "English",
+        "best_macro_f1": 0.8060961864600195,
+        "worst_language": "Hungarian",
+        "worst_macro_f1": 0.5901328273244781,
+        "range": 0.21596335913554132,
+        "english_macro_f1": 0.8060961864600195,
+        "non_english_macro_f1_mean": 0.7042795408900029,
+        "english_gap": 0.10181664557001657
+      },
       "cross_language_consistency": {
         "concepts": 1416,
         "pairwise_agreement": 0.8196652766568021,
@@ -6640,7 +6649,16 @@
           "frr": 0.6447368421052632
         }
       },
-      "language_equity": null,
+      "language_equity": {
+        "best_language": "English",
+        "best_macro_f1": 0.7566080977845684,
+        "worst_language": "Hungarian",
+        "worst_macro_f1": 0.565481946561418,
+        "range": 0.19112615122315035,
+        "english_macro_f1": 0.7566080977845684,
+        "non_english_macro_f1_mean": 0.6650239478613477,
+        "english_gap": 0.09158414992322073
+      },
       "cross_language_consistency": {
         "concepts": 1416,
         "pairwise_agreement": 0.7617209218904134,
@@ -9969,7 +9987,16 @@
           "frr": 0.3157894736842105
         }
       },
-      "language_equity": null,
+      "language_equity": {
+        "best_language": "English",
+        "best_macro_f1": 0.738691299269252,
+        "worst_language": "Irish",
+        "worst_macro_f1": 0.5026968507742571,
+        "range": 0.23599444849499496,
+        "english_macro_f1": 0.738691299269252,
+        "non_english_macro_f1_mean": 0.6606682862724891,
+        "english_gap": 0.07802301299676295
+      },
       "cross_language_consistency": {
         "concepts": 1416,
         "pairwise_agreement": 0.7992220428661106,
@@ -13298,7 +13325,16 @@
           "frr": 0.6973684210526315
         }
       },
-      "language_equity": null,
+      "language_equity": {
+        "best_language": "English",
+        "best_macro_f1": 0.7644449373405791,
+        "worst_language": "Irish",
+        "worst_macro_f1": 0.5451342367161054,
+        "range": 0.21931070062447366,
+        "english_macro_f1": 0.7644449373405791,
+        "non_english_macro_f1_mean": 0.6555760736514524,
+        "english_gap": 0.10886886368912663
+      },
       "cross_language_consistency": {
         "concepts": 1416,
         "pairwise_agreement": 0.7524863240964936,
@@ -16627,7 +16663,16 @@
           "frr": 0.11842105263157894
         }
       },
-      "language_equity": null,
+      "language_equity": {
+        "best_language": "English",
+        "best_macro_f1": 0.7606338837674858,
+        "worst_language": "Irish",
+        "worst_macro_f1": 0.495989801630422,
+        "range": 0.26464408213706375,
+        "english_macro_f1": 0.7606338837674858,
+        "non_english_macro_f1_mean": 0.6498830660223031,
+        "english_gap": 0.1107508177451827
+      },
       "cross_language_consistency": {
         "concepts": 1416,
         "pairwise_agreement": 0.8109339969509461,
@@ -19956,7 +20001,16 @@
           "frr": 0.15789473684210525
         }
       },
-      "language_equity": null,
+      "language_equity": {
+        "best_language": "English",
+        "best_macro_f1": 0.7532501215756202,
+        "worst_language": "Irish",
+        "worst_macro_f1": 0.5050074245174063,
+        "range": 0.2482426970582139,
+        "english_macro_f1": 0.7532501215756202,
+        "non_english_macro_f1_mean": 0.6452090524896184,
+        "english_gap": 0.10804106908600186
+      },
       "cross_language_consistency": {
         "concepts": 1416,
         "pairwise_agreement": 0.8123464263294772,
@@ -23285,7 +23339,16 @@
           "frr": 0.3157894736842105
         }
       },
-      "language_equity": null,
+      "language_equity": {
+        "best_language": "English",
+        "best_macro_f1": 0.7511935354406646,
+        "worst_language": "Irish",
+        "worst_macro_f1": 0.45516776522083424,
+        "range": 0.29602577021983034,
+        "english_macro_f1": 0.7511935354406646,
+        "non_english_macro_f1_mean": 0.6370821919461397,
+        "english_gap": 0.1141113434945249
+      },
       "cross_language_consistency": {
         "concepts": 1416,
         "pairwise_agreement": 0.7785389202762084,
@@ -26614,7 +26677,16 @@
           "frr": 0.17105263157894737
         }
       },
-      "language_equity": null,
+      "language_equity": {
+        "best_language": "English",
+        "best_macro_f1": 0.7577453058562345,
+        "worst_language": "Hungarian",
+        "worst_macro_f1": 0.5282083271232565,
+        "range": 0.22953697873297796,
+        "english_macro_f1": 0.7577453058562345,
+        "non_english_macro_f1_mean": 0.632239484048706,
+        "english_gap": 0.12550582180752845
+      },
       "cross_language_consistency": {
         "concepts": 1416,
         "pairwise_agreement": 0.8266915523271455,
@@ -29943,7 +30015,16 @@
           "frr": 0.2236842105263158
         }
       },
-      "language_equity": null,
+      "language_equity": {
+        "best_language": "English",
+        "best_macro_f1": 0.7177783683231465,
+        "worst_language": "Maltese",
+        "worst_macro_f1": 0.47991565265486724,
+        "range": 0.2378627156682792,
+        "english_macro_f1": 0.7177783683231465,
+        "non_english_macro_f1_mean": 0.6156882876415806,
+        "english_gap": 0.10209008068156589
+      },
       "cross_language_consistency": {
         "concepts": 1416,
         "pairwise_agreement": 0.8241503004214868,
@@ -33272,7 +33353,16 @@
           "frr": 0.19736842105263158
         }
       },
-      "language_equity": null,
+      "language_equity": {
+        "best_language": "English",
+        "best_macro_f1": 0.8070570267052983,
+        "worst_language": "Maltese",
+        "worst_macro_f1": 0.4299085165327965,
+        "range": 0.37714851017250184,
+        "english_macro_f1": 0.8070570267052983,
+        "non_english_macro_f1_mean": 0.6039468150201454,
+        "english_gap": 0.20311021168515297
+      },
       "cross_language_consistency": {
         "concepts": 1416,
         "pairwise_agreement": 0.7691866200340777,
@@ -36601,7 +36691,16 @@
           "frr": 0.19736842105263158
         }
       },
-      "language_equity": null,
+      "language_equity": {
+        "best_language": "English",
+        "best_macro_f1": 0.6897605299929483,
+        "worst_language": "Korean",
+        "worst_macro_f1": 0.4561774566092922,
+        "range": 0.23358307338365614,
+        "english_macro_f1": 0.6897605299929483,
+        "non_english_macro_f1_mean": 0.5792754491100698,
+        "english_gap": 0.11048508088287856
+      },
       "cross_language_consistency": {
         "concepts": 1416,
         "pairwise_agreement": 0.7920253788897856,
@@ -39930,7 +40029,16 @@
           "frr": 0.19736842105263158
         }
       },
-      "language_equity": null,
+      "language_equity": {
+        "best_language": "English",
+        "best_macro_f1": 0.7554295456978768,
+        "worst_language": "Irish",
+        "worst_macro_f1": 0.371842726182648,
+        "range": 0.38358681951522877,
+        "english_macro_f1": 0.7554295456978768,
+        "non_english_macro_f1_mean": 0.5768285559696296,
+        "english_gap": 0.17860098972824723
+      },
       "cross_language_consistency": {
         "concepts": 1416,
         "pairwise_agreement": 0.8189411263563806,
@@ -43259,7 +43367,16 @@
           "frr": 0.23684210526315788
         }
       },
-      "language_equity": null,
+      "language_equity": {
+        "best_language": "English",
+        "best_macro_f1": 0.7141644191389471,
+        "worst_language": "Maltese",
+        "worst_macro_f1": 0.39836583505828516,
+        "range": 0.31579858408066197,
+        "english_macro_f1": 0.7141644191389471,
+        "non_english_macro_f1_mean": 0.5751112697301225,
+        "english_gap": 0.13905314940882463
+      },
       "cross_language_consistency": {
         "concepts": 1416,
         "pairwise_agreement": 0.8055185633575465,
@@ -46588,7 +46705,16 @@
           "frr": 0.19736842105263158
         }
       },
-      "language_equity": null,
+      "language_equity": {
+        "best_language": "English",
+        "best_macro_f1": 0.6996818663838812,
+        "worst_language": "Hungarian",
+        "worst_macro_f1": 0.46977092516801233,
+        "range": 0.22991094121586886,
+        "english_macro_f1": 0.6996818663838812,
+        "non_english_macro_f1_mean": 0.5685479882375281,
+        "english_gap": 0.13113387814635313
+      },
       "cross_language_consistency": {
         "concepts": 1416,
         "pairwise_agreement": 0.867094879383015,
@@ -49917,7 +50043,16 @@
           "frr": 0.5263157894736842
         }
       },
-      "language_equity": null,
+      "language_equity": {
+        "best_language": "English",
+        "best_macro_f1": 0.6682481951710302,
+        "worst_language": "Irish",
+        "worst_macro_f1": 0.46169089622503945,
+        "range": 0.20655729894599073,
+        "english_macro_f1": 0.6682481951710302,
+        "non_english_macro_f1_mean": 0.5312975224700539,
+        "english_gap": 0.13695067270097627
+      },
       "cross_language_consistency": {
         "concepts": 1416,
         "pairwise_agreement": 0.5784638149044928,
@@ -53246,7 +53381,16 @@
           "frr": 0.3684210526315789
         }
       },
-      "language_equity": null,
+      "language_equity": {
+        "best_language": "English",
+        "best_macro_f1": 0.6640695235241234,
+        "worst_language": "Latvian",
+        "worst_macro_f1": 0.39325374692095383,
+        "range": 0.2708157766031696,
+        "english_macro_f1": 0.6640695235241234,
+        "non_english_macro_f1_mean": 0.5265708146720949,
+        "english_gap": 0.13749870885202853
+      },
       "cross_language_consistency": {
         "concepts": 1416,
         "pairwise_agreement": 0.7295747018204646,
@@ -56575,7 +56719,16 @@
           "frr": 0.15789473684210525
         }
       },
-      "language_equity": null,
+      "language_equity": {
+        "best_language": "English",
+        "best_macro_f1": 0.7374547578832404,
+        "worst_language": "Hungarian",
+        "worst_macro_f1": 0.3375521907540621,
+        "range": 0.3999025671291783,
+        "english_macro_f1": 0.7374547578832404,
+        "non_english_macro_f1_mean": 0.5167295053290211,
+        "english_gap": 0.22072525255421938
+      },
       "cross_language_consistency": {
         "concepts": 1416,
         "pairwise_agreement": 0.8264471796251457,
