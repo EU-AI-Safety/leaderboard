@@ -1,4 +1,4 @@
-const state = { data: null, metric: "macro_f1", analysisMetric: "macro_f1", resourceMetric: "macro_f1", breakdown: "by_language", query: "" };
+const state = { data: null, metric: "macro_f1", analysisMetric: "macro_f1", resourceMetric: "macro_f1", breakdown: "by_language", query: "", guardTrack: "human_reviewed", guardDimension: "by_language", guardMetric: "macro_f1" };
 
 const labels = {
   macro_f1: "Macro-F1",
@@ -45,6 +45,7 @@ async function loadData() {
   renderStats();
   populateModels();
   renderTable();
+  renderGuardBenchmark();
   renderResourceChart();
   renderAnalysis();
 }
@@ -92,6 +93,68 @@ function renderTable() {
     renderAnalysis();
     document.getElementById("analysis").scrollIntoView({ behavior: "smooth" });
   }));
+}
+
+function guardTrack() {
+  return state.data.guard_benchmark.tracks[state.guardTrack];
+}
+
+function populateGuardModels() {
+  const select = document.getElementById("guard-model");
+  const previous = select.value;
+  select.innerHTML = guardTrack().models.map((model) => `<option value="${model.slug}">${model.name}</option>`).join("");
+  if (guardTrack().models.some((model) => model.slug === previous)) select.value = previous;
+}
+
+function renderGuardBenchmark() {
+  if (!state.data.guard_benchmark) {
+    document.getElementById("guard-leaderboard").hidden = true;
+    return;
+  }
+  const track = guardTrack();
+  const primary = state.guardTrack === "human_reviewed";
+  document.getElementById("guard-summary").innerHTML = `
+    <div><strong>${track.models.length}</strong><span>Guard models</span></div>
+    <div><strong>${track.items_per_model.toLocaleString()}</strong><span>Test items/model</span></div>
+    <div><strong>${track.languages}</strong><span>Languages</span></div>
+    <div><strong>${track.categories}</strong><span>Risk categories</span></div>
+    <p><b>${primary ? "Primary track" : "Exploratory track"}</b>${primary ? "Accepted source and human-reviewed translations." : "Includes unreviewed machine translations."}</p>`;
+  document.getElementById("guard-leaderboard-body").innerHTML = track.models.map((model) => `
+    <tr>
+      <td class="rank ${model.rank <= 3 ? "top" : ""}">${String(model.rank).padStart(2, "0")}</td>
+      <td><span class="model-name">${model.name}</span><span class="model-org">${model.organization} · ${model.native_policy_family}</span></td>
+      <td class="number">${model.parameters}</td>
+      <td class="number guard-primary-score">${percent(model.metrics.macro_f1)}</td>
+      <td class="number">${model.metrics.mcc.toFixed(2)}</td>
+      <td class="number">${percent(model.metrics.block_recall)}</td>
+      <td class="number">${percent(model.metrics.over_block)}</td>
+      <td class="number">${percent(model.metrics.under_block)}</td>
+    </tr>`).join("");
+  populateGuardModels();
+  renderGuardBreakdown();
+}
+
+function guardProvisionLabel(key) {
+  const parts = key.replace("EUAI.ANNEXIII.", "").split(".");
+  return parts.length === 1 ? parts[0] : `${parts[0]}(${parts[1]})`;
+}
+
+function renderGuardBreakdown() {
+  const slug = document.getElementById("guard-model").value || guardTrack().models[0].slug;
+  const model = guardTrack().models.find((candidate) => candidate.slug === slug);
+  const metric = state.guardMetric;
+  const entries = Object.entries(model[state.guardDimension]).sort((a, b) => b[1][metric] - a[1][metric]);
+  const lowerIsBetter = metric === "over_block" || metric === "under_block";
+  document.getElementById("guard-breakdown-chart").innerHTML = entries.map(([key, metrics], index) => {
+    const label = state.guardDimension === "by_provision"
+      ? `<span class="annex-code">${guardProvisionLabel(key)}</span><span class="annex-name">${key}</span>`
+      : key;
+    return `<div class="bar-row ${lowerIsBetter ? "guard-error" : ""}" title="${key}: ${percent(metrics[metric])}; block=${metrics.n_should_block.toLocaleString()}, allow=${metrics.n_should_allow.toLocaleString()}">
+      <span class="bar-label ${state.guardDimension === "by_provision" ? "annex-label" : ""}">${label}</span>
+      <span class="bar-track"><span class="bar-fill" style="width:${metrics[metric] * 100}%;animation-delay:${Math.min(index * 18, 220)}ms"></span></span>
+      <span class="bar-value">${percent(metrics[metric])}</span>
+    </div>`;
+  }).join("");
 }
 
 function populateModels() {
@@ -261,6 +324,29 @@ document.querySelectorAll("[data-resource-metric]").forEach((button) => button.a
 
 document.getElementById("analysis-model").addEventListener("change", renderAnalysis);
 document.getElementById("heatmap-model").addEventListener("change", renderHeatmap);
+
+document.querySelectorAll("[data-guard-track]").forEach((button) => button.addEventListener("click", () => {
+  document.querySelectorAll("[data-guard-track]").forEach((item) => item.classList.remove("active"));
+  button.classList.add("active");
+  state.guardTrack = button.dataset.guardTrack;
+  renderGuardBenchmark();
+}));
+
+document.querySelectorAll("[data-guard-dimension]").forEach((button) => button.addEventListener("click", () => {
+  document.querySelectorAll("[data-guard-dimension]").forEach((item) => item.classList.remove("active"));
+  button.classList.add("active");
+  state.guardDimension = button.dataset.guardDimension;
+  renderGuardBreakdown();
+}));
+
+document.querySelectorAll("[data-guard-metric]").forEach((button) => button.addEventListener("click", () => {
+  document.querySelectorAll("[data-guard-metric]").forEach((item) => item.classList.remove("active"));
+  button.classList.add("active");
+  state.guardMetric = button.dataset.guardMetric;
+  renderGuardBreakdown();
+}));
+
+document.getElementById("guard-model").addEventListener("change", renderGuardBreakdown);
 
 loadData().catch((error) => {
   document.getElementById("leaderboard-body").innerHTML = `<tr><td colspan="8" class="loading">${error.message}. Serve this directory over HTTP to view the leaderboard.</td></tr>`;

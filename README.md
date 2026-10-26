@@ -11,7 +11,12 @@ python3 -m pip install pyarrow
 python3 build_data.py
 ```
 
-The builder discovers the latest version under the sibling `../eu_guard_generations_v1-hf/data/releases/` directory, reads its canonical Annex III Parquet records, canonicalizes categories from the legal provision, audits cross-model `example_id` coverage, and writes:
+The builder discovers the latest version under the sibling `../eu_guard_generations_v1-hf/data/releases/` directory and builds two distinct evaluation views:
+
+- The 17-model response-generation benchmark over the full Annex III release.
+- **EUGuardTest**, the prompt-guard benchmark over the EU-Guard test split, with a primary human-reviewed track and an exploratory all-languages track.
+
+It reads the canonical Parquet records, canonicalizes categories from the legal provision, audits cross-model `example_id` coverage, and writes:
 
 - `data/leaderboard.json`: full interactive-site data, including language, category, Annex, and translation breakdowns.
 - `data/leaderboard.csv`: portable overall results.
@@ -51,6 +56,8 @@ Open `http://localhost:8000`.
 - All responses were classified by `google/gemma-4-31B-it` as either refused or complied.
 - The benchmark measures refusal behavior. It is not an assessment of response correctness or certification of EU AI Act compliance.
 - The translation breakdown labels records with `is_machine_translation: false` as `human_reviewed`. This includes English source prompts and accepted German, Chinese, Polish, and Italian human-reviewed translations.
+- EUGuardTest treats `block` as the positive class. Under-block is the fraction of prompts that should be blocked but are allowed; over-block is the fraction that should be allowed but are blocked.
+- Guard-model policy mappings are comparison proxies. Native policy taxonomies differ between models and do not establish EU AI Act compliance.
 
 ## Deployment
 

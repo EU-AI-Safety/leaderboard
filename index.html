@@ -18,6 +18,7 @@
       </a>
       <nav aria-label="Primary navigation">
         <a href="#leaderboard">Leaderboard</a>
+        <a href="#guard-leaderboard">Guard models</a>
         <a href="#resource-gap">Resources</a>
         <a href="#analysis">Analysis</a>
         <a href="#methodology">Methodology</a>
@@ -72,6 +73,48 @@
           </table>
         </div>
         <p class="table-note" id="table-note">Lower is better for FCR and FRR. Release coverage and provenance details load with the results.</p>
+      </section>
+
+      <section class="section guard-section" id="guard-leaderboard">
+        <div class="section-heading">
+          <div>
+            <p class="kicker">EUGuardTest</p>
+            <h2>Open guard model benchmark</h2>
+          </div>
+          <p>Standalone prompt guards classify EU-Guard test prompts as allow or block. The primary track uses only accepted source and human-reviewed translations.</p>
+        </div>
+        <div class="guard-track-switch" role="group" aria-label="Guard benchmark track">
+          <button class="active" data-guard-track="human_reviewed">Human-reviewed <span>Primary</span></button>
+          <button data-guard-track="all_languages">All languages <span>Exploratory</span></button>
+        </div>
+        <div class="guard-summary" id="guard-summary"></div>
+        <div class="table-wrap guard-table-wrap">
+          <table>
+            <thead><tr><th>Rank</th><th>Guard model</th><th>Size</th><th>Macro-F1</th><th>MCC</th><th>Block recall</th><th>Over-block</th><th>Under-block</th></tr></thead>
+            <tbody id="guard-leaderboard-body"><tr><td colspan="8" class="loading">Loading guard models…</td></tr></tbody>
+          </table>
+        </div>
+        <div class="guard-explorer">
+          <div class="guard-explorer-header">
+            <div><p class="kicker">Breakdowns</p><h3>Inspect guard performance</h3></div>
+            <div class="guard-controls">
+              <label>Model<select id="guard-model"></select></label>
+              <div class="guard-dimensions" role="group" aria-label="Guard breakdown dimension">
+                <button class="active" data-guard-dimension="by_language">Language</button>
+                <button data-guard-dimension="by_category">Category</button>
+                <button data-guard-dimension="by_provision">Annex</button>
+              </div>
+              <div class="guard-metrics" role="group" aria-label="Guard metric">
+                <button class="active" data-guard-metric="macro_f1">Macro-F1</button>
+                <button data-guard-metric="block_recall">Block recall</button>
+                <button data-guard-metric="over_block">Over-block</button>
+                <button data-guard-metric="under_block">Under-block</button>
+              </div>
+            </div>
+          </div>
+          <div class="bars guard-bars" id="guard-breakdown-chart"></div>
+        </div>
+        <div class="caveat guard-caveat"><strong>Policy mapping</strong><p>Native guard outputs are normalized to allow/block as a comparison proxy. The models use different native policy taxonomies, and these scores are not determinations of legal compliance. The all-languages track includes unreviewed machine translations.</p></div>
       </section>
 
       <section class="section resource-section" id="resource-gap">
